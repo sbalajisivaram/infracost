@@ -19,7 +19,7 @@ import (
 var minOutputVersion = "0.1"
 var maxOutputVersion = "0.1"
 
-func outputCmd(cfg *config.Config) *cobra.Command {
+func outputCmd(ctx *config.RunContext) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "output",
 		Short: "Combine and output Infracost JSON files in different formats",
@@ -97,7 +97,7 @@ func outputCmd(cfg *config.Config) *cobra.Command {
 			}
 
 			opts := output.Options{
-				NoColor:    cfg.NoColor,
+				NoColor:    ctx.Config.NoColor,
 				GroupKey:   "filename",
 				GroupLabel: "File",
 				Fields:     fields,
@@ -143,8 +143,8 @@ func outputCmd(cfg *config.Config) *cobra.Command {
 	return cmd
 }
 
-func reportCmd(cfg *config.Config) *cobra.Command {
-	cmd := outputCmd(cfg)
+func reportCmd(ctx *config.RunContext) *cobra.Command {
+	cmd := outputCmd(ctx)
 	cmd.Use = "report"
 	cmd.Hidden = true
 	cmd.Long = "This command is deprecated and will be removed in v0.9.0. Please use `infracost output`."
@@ -173,7 +173,7 @@ func reportCmd(cfg *config.Config) *cobra.Command {
 		)
 		msg += ui.WarningString("└────────────────────────────────────────────────────────────────────────┘")
 
-		if cfg.IsLogging() {
+		if ctx.Config.IsLogging() {
 			for _, l := range strings.Split(ui.StripColor(msg), "\n") {
 				log.Warn(l)
 			}
@@ -181,7 +181,7 @@ func reportCmd(cfg *config.Config) *cobra.Command {
 			fmt.Fprintln(os.Stderr, msg)
 		}
 
-		processDeprecatedEnvVars(cfg)
+		processDeprecatedEnvVars(ctx.Config)
 		processDeprecatedFlags(cmd)
 	}
 

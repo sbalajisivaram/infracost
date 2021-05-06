@@ -174,9 +174,12 @@ func loadResources(cfg *config.Config, tfProject TerraformProject, usage map[str
 		return nil, err
 	}
 
-	provider := terraform.NewDirProvider(cfg, &config.Project{
-		Path: tfdir,
-	})
+	provider := terraform.NewDirProvider(config.NewProjectContext(
+		config.EmptyRunContext(),
+		&config.Project{
+			Path: tfdir,
+		},
+	))
 
 	return provider.LoadResources(usage)
 }

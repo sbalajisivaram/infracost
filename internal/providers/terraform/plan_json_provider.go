@@ -9,14 +9,14 @@ import (
 )
 
 type PlanJSONProvider struct {
+	ctx  *config.ProjectContext
 	Path string
-	env  *config.Environment
 }
 
-func NewPlanJSONProvider(cfg *config.Config, projectCfg *config.Project) schema.Provider {
+func NewPlanJSONProvider(ctx *config.ProjectContext) schema.Provider {
 	return &PlanJSONProvider{
-		Path: projectCfg.Path,
-		env:  cfg.Environment,
+		ctx:  ctx,
+		Path: ctx.ProjectConfig.Path,
 	}
 }
 
@@ -36,7 +36,7 @@ func (p *PlanJSONProvider) LoadResources(usage map[string]*schema.UsageData) (*s
 		return project, errors.Wrap(err, "Error reading Terraform plan JSON file")
 	}
 
-	parser := NewParser(p.env)
+	parser := NewParser(p.ctx)
 
 	pastResources, resources, err := parser.parseJSON(j, usage)
 	if err != nil {
